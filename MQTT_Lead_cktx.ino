@@ -1,4 +1,6 @@
 #include <WiFi.h>//在线
+#include <string.h>
+
 const char *wifi_name= "RW";//不能改的变量
 const char *wifi_password = "23333333";
 
@@ -11,17 +13,24 @@ int vibration_pin3 = 3;
 int vibration_pin4 = 4;
 int vibration_pin5 = 5;
 
-int value1 = 0;
-int value2 = 0;
-int value3 = 0;
-int value4 = 0;
-int value5 = 0;
-
 int status1 = 0;
 int status2 = 0;
 int status3 = 0;
 int status4 = 0;
 int status5 = 0;
+
+char pattern1;
+char pattern2;
+char pattern3;
+char pattern4;
+char pattern5;
+
+// Define the patterns for the vibration, use only 0, 1, and 2
+const char *patternA = "0012200122";
+const char *patternB = "0122101221";
+const char *patternC = "0122102210";
+const char *patternD = "0221102211";
+const char *patternE = "1221001221";
 
 void setup() {
   // put your setup code here, to run once:
@@ -39,44 +48,30 @@ void loop() {
   // put your main code here, to run repeatedly:
   if(Serial.available() > 0)
   {
-
-    int value4 = Serial.parseInt();
+    status4 = Serial.parseInt();
+    pattern4 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
-    status4 = value4;
-    analogWrite(vibration_pin4, status4);
-    Serial.print("status4 of vibration: ");
-    Serial.println(status4);
+    apply_pattern(vibration_pin4, status4, pattern4);
 
-    int value3 = Serial.parseInt();
+    status3 = Serial.parseInt();
+    pattern3 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
-    status3 = value3;
-    analogWrite(vibration_pin3, status3);
-    Serial.print("status3 of vibration: ");
-    Serial.println(status3);
+    apply_pattern(vibration_pin3, status3, pattern3);
 
-    int value1 = Serial.parseInt();
+    status1 = Serial.parseInt();
+    pattern1 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
-    status1 = value1;
-    analogWrite(vibration_pin1, status1);
-    Serial.print("status1 of vibration: ");
-    Serial.println(status1);
+    apply_pattern(vibration_pin1, status1, pattern1);
 
-    int value5 = Serial.parseInt();
+    status5 = Serial.parseInt();
+    pattern5 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
-    status5 = value5;
-    analogWrite(vibration_pin5, status5);
-    Serial.print("status5 of vibration: ");
-    Serial.println(status5);
+    apply_pattern(vibration_pin5, status5, pattern5);
     
-    int value2 = Serial.parseInt();
+    status2 = Serial.parseInt();
+    pattern2 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
-    status2 = value2;
-    analogWrite(vibration_pin2, status2);
-    Serial.print("status2 of vibration: ");
-    Serial.println(status2);
-
-
-
+    apply_pattern(vibration_pin2, status2, pattern2);
   }
 }
 
@@ -96,5 +91,25 @@ void wifi_connect_func(const char *ssid, const char *pw)
   Serial.println("[WIFI] Connected!");
   Serial.print("[WIFI] IP is: ");
   Serial.println(WiFi.localIP());
+}
 
+void apply_pattern(int pin, int status, char pattern)
+{
+  const char *p;
+  switch(pattern)
+  {
+    case 'A': p = patternA; break;
+    case 'B': p = patternB; break;
+    case 'C': p = patternC; break;
+    case 'D': p = patternD; break;
+    case 'E': p = patternE; break;
+    default: return;
+  }
+
+  for(int i = 0; i < 10; i++)
+  {
+    int intensity = (p[i] - '0') * status / 2; // The max value is 2
+    analogWrite(pin, intensity);
+    delay(500); // delay for 200ms
+  }
 }
