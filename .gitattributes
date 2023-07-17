@@ -1,0 +1,10 @@
+# 使用Git LFS管理的文件类型
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# 不使用Git LFS管理的文件类型
+*.txt -text
+*.md -text
+
+

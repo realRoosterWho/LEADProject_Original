@@ -1,9 +1,6 @@
 #include <WiFi.h>//在线
 #include <string.h>
 
-const char *wifi_name= "RW";//不能改的变量
-const char *wifi_password = "23333333";
-
 #include <PubSubClient.h>
 WiFiClient wifi_client;
 
@@ -35,7 +32,7 @@ const char *patternE = "1221001221";
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  wifi_connect_func(wifi_name, wifi_password);
+
 
   pinMode(vibration_pin1, OUTPUT);
   pinMode(vibration_pin2, OUTPUT);
@@ -48,50 +45,33 @@ void loop() {
   // put your main code here, to run repeatedly:
   if(Serial.available() > 0)
   {
-    status4 = Serial.parseInt();
-    pattern4 = Serial.read(); // read the pattern
+    status1 = Serial.parseInt();
+    pattern1 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
-    apply_pattern(vibration_pin4, status4, pattern4);
+    apply_pattern(vibration_pin1, status1, pattern1);
+
+    status2 = Serial.parseInt();
+    pattern2 = Serial.read(); // read the pattern
+    Serial.readStringUntil(',');
+    apply_pattern(vibration_pin2, status2, pattern2);
 
     status3 = Serial.parseInt();
     pattern3 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
     apply_pattern(vibration_pin3, status3, pattern3);
 
-    status1 = Serial.parseInt();
-    pattern1 = Serial.read(); // read the pattern
+    status4 = Serial.parseInt();
+    pattern4 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
-    apply_pattern(vibration_pin1, status1, pattern1);
-
+    apply_pattern(vibration_pin4, status4, pattern4);
+    
     status5 = Serial.parseInt();
     pattern5 = Serial.read(); // read the pattern
     Serial.readStringUntil(',');
     apply_pattern(vibration_pin5, status5, pattern5);
-    
-    status2 = Serial.parseInt();
-    pattern2 = Serial.read(); // read the pattern
-    Serial.readStringUntil(',');
-    apply_pattern(vibration_pin2, status2, pattern2);
   }
 }
 
-void wifi_connect_func(const char *ssid, const char *pw)
-{
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, pw);
-  Serial.println("");
-  Serial.print("[WIFI] Connecting to: ");
-  Serial.println(ssid);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(100);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("[WIFI] Connected!");
-  Serial.print("[WIFI] IP is: ");
-  Serial.println(WiFi.localIP());
-}
 
 void apply_pattern(int pin, int status, char pattern)
 {
